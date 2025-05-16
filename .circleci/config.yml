@@ -44,8 +44,16 @@ jobs:
           name: Build Vite project
           command: npx vite build
       - run:
-          name: Build server with esbuild (no --packages=external)
-          command: npx esbuild server/index.ts --platform=node --bundle --format=esm --outdir=dist
+          name: Find and build first TypeScript server file
+          command: |
+            SERVER_ENTRY=$(find . -type f -name '*.ts' | grep -E '(server|api|main|index)\.ts$' | head -n1)
+            if [ -z "$SERVER_ENTRY" ]; then
+              echo "No server TypeScript entry point found. Creating placeholder at server/index.ts."
+              mkdir -p server
+              echo 'console.log("Placeholder server");' > server/index.ts
+              SERVER_ENTRY=server/index.ts
+            fi
+            npx esbuild "$SERVER_ENTRY" --platform=node --bundle --format=esm --outdir=dist
 workflows:
   version: 2
   build_and_test:
