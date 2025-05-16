@@ -10,8 +10,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Clean Gradle cache
-          command: ./gradlew clean
+          name: Install dependencies
+          command: ./gradlew dependencies
+      - run:
+          name: Clear Gradle cache
+          command: rm -rf ~/.gradle/caches
       - run:
           name: Disable Gradle Daemon
           command: echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
