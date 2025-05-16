@@ -1,44 +1,24 @@
 version: 2.1
-jobs:
-  build:
+executors:
+  flutter-executor:
     docker:
-      - image: cimg/node:18.20.5
-    working_directory: ~/project/client
+      - image: cirrusci/flutter:latest
+    working_directory: ~/project
+jobs:
+  build-apk:
+    executor: flutter-executor
     steps:
       - checkout
       - run:
-          name: List files in root directory
-          command: ls -al ~/project
+          name: Install Flutter dependencies
+          command: flutter pub get
       - run:
-          name: List files in client directory
-          command: ls -al ~/project/client
-      - run:
-          name: Show Vite config (if exists)
-          command: |
-            if [ -f vite.config.js ]; then cat vite.config.js; fi
-            if [ -f vite.config.ts ]; then cat vite.config.ts; fi
-      - restore_cache:
-          keys:
-            - npm-cache-{{ checksum "package-lock.json" }}
-            - npm-cache-
-      - run:
-          name: Install dependencies
-          command: npm ci
-      - save_cache:
-          key: npm-cache-{{ checksum "package-lock.json" }}
-          paths:
-            - ~/.npm
-      - run:
-          name: Build Vite project
-          command: npm run build
-      - persist_to_workspace:
-          root: dist
-          paths:
-            - .
+          name: Build APK
+          command: flutter build apk --release
       - store_artifacts:
-          path: dist
-          destination: dist
+          path: build/app/outputs/flutter-apk/app-release.apk
+          destination: app-release.apk
 workflows:
-  build_and_store:
+  build:
     jobs:
-      - build
+      - build-apk
