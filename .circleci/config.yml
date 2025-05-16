@@ -9,17 +9,9 @@ jobs:
     executor: node-executor
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - yarn-cache-{{ checksum "yarn.lock" }}
-            - yarn-cache-
       - run:
           name: Install dependencies
           command: yarn install --frozen-lockfile
-      - save_cache:
-          key: yarn-cache-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
       - run:
           name: Build TypeScript
           command: yarn build
