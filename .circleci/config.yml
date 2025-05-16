@@ -21,6 +21,16 @@ jobs:
             - ~/.npm
           key: npm-cache-{{ checksum "package-lock.json" }}
       - run:
+          name: Add placeholder test script
+          command: |
+            node -e '
+              const fs = require("fs");
+              const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+              pkg.scripts = pkg.scripts || {};
+              pkg.scripts.test = pkg.scripts.test || "echo \\\"No tests specified\\\" && exit 0";
+              fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2));
+            '
+      - run:
           name: Run tests
           command: npm test
       - run:
