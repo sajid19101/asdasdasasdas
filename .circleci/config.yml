@@ -18,7 +18,7 @@ jobs:
           command: npm ci
       - run:
           name: Build server only
-          command: esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+          command: npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
 workflows:
   version: 2
   build-only:
