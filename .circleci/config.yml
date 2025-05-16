@@ -6,6 +6,9 @@ jobs:
     working_directory: ~/project/client
     steps:
       - checkout
+      - run:
+          name: List files in working directory
+          command: ls -al
       - restore_cache:
           keys:
             - npm-cache-{{ checksum "package-lock.json" }}
