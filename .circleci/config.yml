@@ -7,8 +7,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: List files in working directory
-          command: ls -al
+          name: List files in root directory
+          command: ls -al ~/project
+      - run:
+          name: List files in client directory
+          command: ls -al ~/project/client
+      - run:
+          name: Show Vite config (if exists)
+          command: |
+            if [ -f vite.config.js ]; then cat vite.config.js; fi
+            if [ -f vite.config.ts ]; then cat vite.config.ts; fi
       - restore_cache:
           keys:
             - npm-cache-{{ checksum "package-lock.json" }}
