@@ -1,28 +1,25 @@
 version: 2.1
 executors:
-  flutter-executor:
+  android-executor:
     docker:
-      - image: cirrusci/flutter:latest
+      - image: cimg/android:2024.01.1
     working_directory: ~/project
 jobs:
   build-apk:
-    executor: flutter-executor
+    executor: android-executor
     steps:
       - checkout
       - run:
-          name: Install Flutter dependencies
-          command: flutter pub get
-      - run:
-          name: Clear Gradle cache
-          command: rm -rf ~/.gradle/caches
+          name: Clean Gradle cache
+          command: ./gradlew clean
       - run:
           name: Disable Gradle Daemon
           command: echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
       - run:
           name: Build APK
-          command: flutter build apk --release
+          command: ./gradlew assembleRelease
       - store_artifacts:
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: app/build/outputs/apk/release/app-release.apk
           destination: app-release.apk
 workflows:
   version: 2
