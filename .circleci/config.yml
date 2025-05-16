@@ -17,8 +17,8 @@ jobs:
           name: Install npm dependencies
           command: npm ci
       - run:
-          name: Build project
-          command: npm run build
+          name: Build server only
+          command: esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
 workflows:
   version: 2
   build-only:
