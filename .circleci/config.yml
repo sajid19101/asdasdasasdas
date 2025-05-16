@@ -1,22 +1,26 @@
 version: 2.1
-executors:
-  node-executor:
-    docker:
-      - image: cimg/node:20.11.1
-    working_directory: ~/project
 jobs:
-  build-typescript:
-    executor: node-executor
+  build:
+    docker:
+      - image: cimg/node:18.20.5
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - npm-cache-{{ checksum "package-lock.json" }}
+            - npm-cache-
       - run:
           name: Install dependencies
-          command: yarn install --frozen-lockfile
+          command: npm install
+      - save_cache:
+          paths:
+            - ~/.npm
+          key: npm-cache-{{ checksum "package-lock.json" }}
       - run:
-          name: Build TypeScript
-          command: yarn build
+          name: Build project
+          command: npm run build
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - build-typescript
+      - build
