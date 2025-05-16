@@ -1,26 +1,31 @@
 version: 2.1
 executors:
-  node-executor:
+  flutter-executor:
     docker:
-      - image: cimg/node:18.20.5
+      - image: cirrusci/flutter:latest
     working_directory: ~/project
 jobs:
-  build:
-    executor: node-executor
+  build-apk:
+    executor: flutter-executor
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - npm-cache-{{ checksum "package-lock.json" }}
-            - npm-cache-
       - run:
-          name: Install npm dependencies
-          command: npm ci
+          name: Install Flutter dependencies
+          command: flutter pub get
       - run:
-          name: Build server only
-          command: npx esbuild server/index.ts --platform=node --bundle --format=esm --outdir=dist
+          name: Clear Gradle cache
+          command: rm -rf ~/.gradle/caches
+      - run:
+          name: Disable Gradle Daemon
+          command: echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+      - run:
+          name: Build APK
+          command: flutter build apk --release
+      - store_artifacts:
+          path: build/app/outputs/flutter-apk/app-release.apk
+          destination: app-release.apk
 workflows:
   version: 2
-  build-only:
+  build:
     jobs:
-      - build
+      - build-apk
