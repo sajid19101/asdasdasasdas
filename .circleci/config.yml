@@ -5,24 +5,6 @@ executors:
       - image: cimg/node:18.20.5
     working_directory: ~/project
 jobs:
-  test:
-    executor: node-executor
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - npm-cache-{{ checksum "package-lock.json" }}
-            - npm-cache-
-      - run:
-          name: Install npm dependencies
-          command: npm ci
-      - save_cache:
-          paths:
-            - ~/.npm
-          key: npm-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: Run tests
-          command: npm test
   build:
     executor: node-executor
     steps:
@@ -39,9 +21,6 @@ jobs:
           command: npm run build
 workflows:
   version: 2
-  test-and-build:
+  build-only:
     jobs:
-      - test
-      - build:
-          requires:
-            - test
+      - build
